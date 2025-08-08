@@ -11,46 +11,41 @@
       color: #333;
       padding: 20px;
     }
-	select {
+    select {
       font-size: 14px;
       padding: 6px 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
-	}
+    }
     .dark-mode {
       background: #121212;
       color: #eee;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
     }
-
     th, td {
-	  font-size: 14px;
+      font-size: 14px;
       padding: 6px 10px;
       border: 1px solid #ccc;
       text-align: left;
     }
-
     th {
       cursor: pointer;
       background-color: #f2f2f2;
     }
-
     .tooltip {
       position: relative;
       display: inline-block;
       cursor: help;
     }
-
     .tooltip .tooltiptext {
       visibility: hidden;
       width: max-content;
       max-width: 300px;
-      background-color: #fff8c4; /* giallo chiaro */
+      background-color: #fff8c4;
       color: #333;
       text-align: left;
       padding: 5px;
@@ -64,28 +59,23 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
-
     .tooltip:hover .tooltiptext {
       visibility: visible;
       opacity: 1;
     }
-
     .controls {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-bottom: 10px;
     }
-
     button, select {
-	  font-size: 12px;
+      font-size: 12px;
       padding: 8px;
     }
-
     .pagination {
       margin-top: 10px;
     }
-
     .pagination button {
       margin-right: 5px;
       padding: 5px 10px;
@@ -119,7 +109,7 @@
         <th onclick="sortTable(0)">Città</th>
         <th onclick="sortTable(1)">Indirizzo</th>
         <th onclick="sortTable(2)">Servizio ASST</th>
-        <th onclick="sortTable(3)">email</th>
+        <th onclick="sortTable(3)">Email</th>
         <th onclick="sortTable(4)">Presidio Fleet</th>
         <th onclick="sortTable(5)">Note</th>
       </tr>
@@ -139,11 +129,11 @@
     const tbody = document.querySelector('tbody');
     const pagination = document.getElementById('pagination');
 
-    // Tooltip email per città (correzione: chiave città)
+    // Mappa per tooltip basata sul campo Email (valori tipo "desio@", "carate@"...)
     const tooltipEmails = {
+      'DESIO': 'sia.desio@asst-brianza.it',
       'CARATE': 'sia.carate@asst-brianza.it',
       'VIMERCATE': 'sia.vimercate@asst-brianza.it',
-      'DESIO': 'sia.desio@asst-brianza.it',
       'IRCCS MONZA': 'sia.monza@asst-brianza.it',
     };
 
@@ -151,30 +141,30 @@
     async function loadCSV() {
       try {
         const response = await fetch('dati.csv');
-        if(!response.ok) throw new Error('Errore caricamento CSV: ' + response.statusText);
+        if (!response.ok) throw new Error('Errore caricamento CSV: ' + response.statusText);
 
         const text = await response.text();
         parseCSV(text);
         populateFilters();
         renderTable();
-      } catch(err) {
+      } catch (err) {
         alert(err.message);
       }
     }
 
-    // Parse CSV semplice (assume header e ; come separatore)
+    // Parse CSV semplice (header + ; separatore)
     function parseCSV(text) {
       const lines = text.trim().split('\n');
-      const headers = lines[0].split(';').map(h => h.trim());
+      const headers = lines[0].split(';').map(h => h.trim().toLowerCase());
       rows = lines.slice(1).map(line => {
         const values = line.split(';').map(v => v.trim());
         return {
-          citta: values[0] || '',
-          indirizzo: values[1] || '',
-          servizio: values[2] || '',
-          email: values[3] || '',
-          presidio: values[4] || '',
-          note: values[5] || ''
+          citta: values[headers.indexOf('città')],
+          indirizzo: values[headers.indexOf('indirizzo')],
+          servizio: values[headers.indexOf('servizio')],
+          email: values[headers.indexOf('email')],
+          presidio: values[headers.indexOf('presidio')],
+          note: values[headers.indexOf('note')] || ''
         };
       });
     }
@@ -184,7 +174,6 @@
       const serviceFilter = document.getElementById('serviceFilter');
       const presidioFilter = document.getElementById('presidioFilter');
 
-      // Pulisce opzioni esistenti tranne la prima (default)
       cityFilter.options.length = 1;
       serviceFilter.options.length = 1;
       presidioFilter.options.length = 1;
@@ -194,7 +183,7 @@
       const presidi = Array.from(new Set(rows.map(r => r.presidio))).sort();
 
       for (const city of cities) {
-        if(city) {
+        if (city) {
           const option = document.createElement('option');
           option.value = city;
           option.textContent = city;
@@ -202,7 +191,7 @@
         }
       }
       for (const serv of services) {
-        if(serv) {
+        if (serv) {
           const option = document.createElement('option');
           option.value = serv;
           option.textContent = serv;
@@ -210,7 +199,7 @@
         }
       }
       for (const pres of presidi) {
-        if(pres) {
+        if (pres) {
           const option = document.createElement('option');
           option.value = pres;
           option.textContent = pres;
@@ -226,8 +215,8 @@
 
       return rows.filter(row => {
         return (!cityVal || row.citta === cityVal) &&
-               (!serviceVal || row.servizio === serviceVal) &&
-               (!presidioVal || row.presidio === presidioVal);
+          (!serviceVal || row.servizio === serviceVal) &&
+          (!presidioVal || row.presidio === presidioVal);
       });
     }
 
@@ -238,7 +227,7 @@
       if (currentSortIndex !== null) {
         filtered.sort((a, b) => {
           let valA, valB;
-          switch(currentSortIndex) {
+          switch (currentSortIndex) {
             case 0: valA = a.citta.toLowerCase(); valB = b.citta.toLowerCase(); break;
             case 1: valA = a.indirizzo.toLowerCase(); valB = b.indirizzo.toLowerCase(); break;
             case 2: valA = a.servizio.toLowerCase(); valB = b.servizio.toLowerCase(); break;
@@ -247,22 +236,25 @@
             case 5: valA = a.note.toLowerCase(); valB = b.note.toLowerCase(); break;
             default: valA = ''; valB = '';
           }
-          if(valA < valB) return sortAsc ? -1 : 1;
-          if(valA > valB) return sortAsc ? 1 : -1;
+          if (valA < valB) return sortAsc ? -1 : 1;
+          if (valA > valB) return sortAsc ? 1 : -1;
           return 0;
         });
       }
 
       const totalPages = Math.ceil(filtered.length / pageSize);
-      if(currentPage > totalPages) currentPage = totalPages || 1;
+      if (currentPage > totalPages) currentPage = totalPages || 1;
 
-      const pageRows = filtered.slice((currentPage -1)*pageSize, currentPage*pageSize);
+      const pageRows = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
       tbody.innerHTML = '';
       for (const row of pageRows) {
-        const tooltipText = tooltipEmails[row.citta.toUpperCase()] || '';
-        const tr = document.createElement('tr');
+        // Estraggo la chiave dal campo email (tolgo '@' finale)
+        let emailRaw = (row.email || '').trim();
+        let key = emailRaw.endsWith('@') ? emailRaw.slice(0, -1).toUpperCase() : emailRaw.toUpperCase();
+        const tooltipText = tooltipEmails[key] || '';
 
+        const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${row.citta}</td>
           <td>${row.indirizzo}</td>
@@ -284,12 +276,12 @@
     function renderPagination(totalPages) {
       pagination.innerHTML = '';
 
-      if(totalPages <= 1) return;
+      if (totalPages <= 1) return;
 
-      for(let i=1; i <= totalPages; i++) {
+      for (let i = 1; i <= totalPages; i++) {
         const btn = document.createElement('button');
         btn.textContent = i;
-        if(i === currentPage) btn.disabled = true;
+        if (i === currentPage) btn.disabled = true;
         btn.addEventListener('click', () => {
           currentPage = i;
           renderTable();
@@ -309,7 +301,7 @@
     }
 
     function sortTable(index) {
-      if(currentSortIndex === index) {
+      if (currentSortIndex === index) {
         sortAsc = !sortAsc;
       } else {
         currentSortIndex = index;
@@ -329,7 +321,6 @@
       doc.setFontSize(12);
       doc.text("Esportazione Sedi Filtrate", 10, 10);
 
-      // Usa autoTable per la tabella (controlla se plugin caricato correttamente)
       doc.autoTable({
         startY: 20,
         head: [headers],
@@ -344,16 +335,12 @@
       document.body.classList.toggle('dark-mode');
     }
 
-    // Event listeners filtri
     document.getElementById('cityFilter').addEventListener('change', () => { currentPage = 1; renderTable(); });
     document.getElementById('serviceFilter').addEventListener('change', () => { currentPage = 1; renderTable(); });
     document.getElementById('presidioFilter').addEventListener('change', () => { currentPage = 1; renderTable(); });
 
-    // Carica CSV al caricamento pagina
     loadCSV();
-
   </script>
-  <!-- Tabella in PDF richiede autoTable -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </body>
 </html>
