@@ -119,7 +119,7 @@
         <th onclick="sortTable(0)">Città</th>
         <th onclick="sortTable(1)">Indirizzo</th>
         <th onclick="sortTable(2)">Servizio ASST</th>
-        <th onclick="sortTable(3)">Email</th>
+        <th onclick="sortTable(3)">email</th>
         <th onclick="sortTable(4)">Presidio Fleet</th>
         <th onclick="sortTable(5)">Note</th>
       </tr>
@@ -144,10 +144,10 @@
       'CARATE': 'sia.carate@asst-brianza.it',
       'VIMERCATE': 'sia.vimercate@asst-brianza.it',
       'DESIO': 'sia.desio@asst-brianza.it',
-      // IRCCS MONZA': 'sia.monza@asst-brianza.it'
-	  'IRCCS MONZA': 'riferire a Fleet Monza',
+      'IRCCS MONZA': 'sia.monza@asst-brianza.it',
     };
 
+    // Funzione per caricare e parsare CSV
     async function loadCSV() {
       try {
         const response = await fetch('dati.csv');
@@ -162,6 +162,7 @@
       }
     }
 
+    // Parse CSV semplice (assume header e ; come separatore)
     function parseCSV(text) {
       const lines = text.trim().split('\n');
       const headers = lines[0].split(';').map(h => h.trim());
@@ -258,6 +259,28 @@
       tbody.innerHTML = '';
       for (const row of pageRows) {
         const tooltipEmail = tooltipEmails[row.presidio.toUpperCase()] || '';
+
+        // Gestione email e tooltip
+        const emailValue = row.email.trim();
+        let emailCellContent = '';
+        if(emailValue.includes('@')) {
+          emailCellContent = emailValue;
+        } else if (tooltipEmails[emailValue.toUpperCase()]) {
+          emailCellContent = `
+            <div class="tooltip">${emailValue}
+              <span class="tooltiptext">${tooltipEmails[emailValue.toUpperCase()]}</span>
+            </div>
+          `;
+        } else if(emailValue === '' && tooltipEmail) {
+          emailCellContent = `
+            <div class="tooltip">${emailValue}
+              <span class="tooltiptext">${tooltipEmail}</span>
+            </div>
+          `;
+        } else {
+          emailCellContent = emailValue;
+        }
+
         const tr = document.createElement('tr');
 
         tr.innerHTML = `
@@ -268,11 +291,7 @@
               <span class="tooltiptext">${row.servizio || ''}</span>
             </div>
           </td>
-          <td>
-            <div class="tooltip">${row.email || ''}
-              ${tooltipEmail ? `<span class="tooltiptext">${tooltipEmail}</span>` : ''}
-            </div>
-          </td>
+          <td>${emailCellContent}</td>
           <td>${row.presidio}</td>
           <td>
             <div class="tooltip">${row.note || ''}
@@ -334,6 +353,7 @@
       doc.setFontSize(12);
       doc.text("Esportazione Sedi Filtrate", 10, 10);
 
+      // Usa autoTable per la tabella
       doc.autoTable({
         startY: 20,
         head: [headers],
