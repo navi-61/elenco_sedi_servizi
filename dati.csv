@@ -1,4 +1,4 @@
-Città;Indirizzo;Servizio;@sia;Presidio;Note
+Città;Indirizzo;Servizio;Email;Presidio;Note
 Besana in Brianza;Via Alessandro Manzoni;...;carate@;Carate Brianza;
 Besana in Brianza;Via Viarana;...;carate@;Carate Brianza;
 Besana in Brianza;Via Alessandro Manzoni;...;carate@;Carate Brianza;
@@ -104,3 +104,4 @@ Lissone;...;Dialisi;irccs monza@;IRCCS MONZA;Riferire a Fleet Monza
 Cologno Monzese;...;Centro prelievi ( AVIS );irccs monza@;IRCCS MONZA;Riferire a Fleet Monza
 Besana in Brianza;...;Centro prelievi ( AVIS );irccs monza@;IRCCS MONZA;Riferire a Fleet Monza
 Desio;Via Gabellini;RSD Lo Scarabocchio;irccs monza@;IRCCS MONZA;Riferire a Fleet Monza
+
