@@ -109,7 +109,7 @@
         <th onclick="sortTable(0)">Città</th>
         <th onclick="sortTable(1)">Indirizzo</th>
         <th onclick="sortTable(2)">Servizio ASST</th>
-        <th onclick="sortTable(3)">SIA</th>
+        <th onclick="sortTable(3)">Email</th>
         <th onclick="sortTable(4)">Presidio Fleet</th>
         <th onclick="sortTable(5)">Note</th>
       </tr>
@@ -129,7 +129,7 @@
     const tbody = document.querySelector('tbody');
     const pagination = document.getElementById('pagination');
 
-    // Mappa per tooltip basata sul campo SIA (valori tipo "desio@", "carate@"...)
+    // Mappa per tooltip basata sul campo Email (valori tipo "desio@", "carate@"...)
     const tooltipEmails = {
       'DESIO': 'sia.desio@asst-brianza.it',
       'CARATE': 'sia.carate@asst-brianza.it',
