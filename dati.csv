@@ -1,5 +1,5 @@
 Città;Indirizzo;Servizio;Email;Presidio;Note
-Besana in Brianza;Via Alessandro Manzoni;...;carate@;Carate Brianza;
+Besana in Brianza;Via Alessandro Manzoni;...;carate;Carate Brianza;
 Besana in Brianza;Via Viarana;...;carate;Carate Brianza;
 Besana in Brianza;Via Alessandro Manzoni;...;carate;Carate Brianza;
 Carate Brianza;Via Mosè Bianchi;Presidio Ospedaliero;carate;Carate Brianza;
@@ -49,12 +49,12 @@ Concorezzo;Via De Giorgi;AMT Ambulatorio Medico Temporaneo;vimercate;Carate Bria
 Mezzago;Via Fratelli Brasca;AMT Ambulatorio Medico Temporaneo;vimercate;Carate Brianza;
 Monza;Ospedale Vecchio Via Solferino;TUTTI NO Uonpia e Consultorio;vimercate;Carate Brianza;ATTENZIONE! AGO è una associazione di volontariato ereditata da HSG monza il personale NON è della ASST BRIANZA accede ai PC in locale NON ha account di dominio e mail aziendale ASST Brianza
 Monza;Via Solferino;TUTTI + AMT;vimercate;Carate Brianza;"detto ""Ospedale Vecchio"" NO Uonpia e Consultorio"
-Monza;Via Boito;TUTTI;vimercate@;Carate Brianza;NO Uonpia e Consultorio
+Monza;Via Boito;TUTTI;vimercate;Carate Brianza;NO Uonpia e Consultorio
 Monza;Via De Amicis;TUTTI NO Uonpia e Consultorio;vimercate;Carate Brianza;
 Monza;Casa Circondariale;TUTTI;vimercate;Carate Brianza;2 PDL IRCCS HSG: NC131211 - CMSAN006X
 Monza;Viale Elvezia;Cure Primarie;vimercate;Carate Brianza;ex ATS Brianza
 Ruginello;Via Generale Armando Diaz  /A;Consultorio;vimercate;Carate Brianza;
-Usmate Velate;Via Roma;Uonpia, Vaccinazioni, Poli Ambulatorio;vimercate@;Carate Brianza;
+Usmate Velate;Via Roma;Uonpia, Vaccinazioni, Poli Ambulatorio;vimercate;Carate Brianza;
 Vimercate;Via Ronchi;NOA;vimercate;Carate Brianza;
 Vimercate;Viale Risorgimento;Dentisti;vimercate;Carate Brianza;
 Vimercate;Piazzale Guglielmo Marconi;...;vimercate;Carate Brianza;
@@ -104,5 +104,6 @@ Lissone;...;Dialisi;irccs monza;IRCCS MONZA;Riferire a Fleet Monza
 Cologno Monzese;...;Centro prelievi ( AVIS );irccs monza;IRCCS MONZA;Riferire a Fleet Monza
 Besana in Brianza;...;Centro prelievi ( AVIS );irccs monza;IRCCS MONZA;Riferire a Fleet Monza
 Desio;Via Gabellini;RSD Lo Scarabocchio;irccs monza;IRCCS MONZA;Riferire a Fleet Monza
+
 
 
