@@ -50,7 +50,7 @@
       visibility: hidden;
       width: max-content;
       max-width: 300px;
-      background-color: #fff8c4;
+      background-color: #fff8c4; /* giallo chiaro */
       color: #333;
       text-align: left;
       padding: 5px;
@@ -139,7 +139,7 @@
     const tbody = document.querySelector('tbody');
     const pagination = document.getElementById('pagination');
 
-    // Tooltip email per presidio (chiavi maiuscole)
+    // Tooltip email per presidio (chiave maiuscola)
     const tooltipEmails = {
       'CARATE': 'sia.carate@asst-brianza.it',
       'VIMERCATE': 'sia.vimercate@asst-brianza.it',
@@ -147,6 +147,7 @@
       'IRCCS MONZA': 'sia.monza@asst-brianza.it',
     };
 
+    // Funzione per caricare e parsare CSV
     async function loadCSV() {
       try {
         const response = await fetch('dati.csv');
@@ -161,8 +162,10 @@
       }
     }
 
+    // Parse CSV semplice (assume header e ; come separatore)
     function parseCSV(text) {
       const lines = text.trim().split('\n');
+      const headers = lines[0].split(';').map(h => h.trim());
       rows = lines.slice(1).map(line => {
         const values = line.split(';').map(v => v.trim());
         return {
@@ -181,6 +184,7 @@
       const serviceFilter = document.getElementById('serviceFilter');
       const presidioFilter = document.getElementById('presidioFilter');
 
+      // Pulisce opzioni esistenti tranne la prima (default)
       cityFilter.options.length = 1;
       serviceFilter.options.length = 1;
       presidioFilter.options.length = 1;
@@ -237,9 +241,9 @@
             case 0: valA = a.citta.toLowerCase(); valB = b.citta.toLowerCase(); break;
             case 1: valA = a.indirizzo.toLowerCase(); valB = b.indirizzo.toLowerCase(); break;
             case 2: valA = a.servizio.toLowerCase(); valB = b.servizio.toLowerCase(); break;
-            case 3: valA = (a.email || '').toLowerCase(); valB = (b.email || '').toLowerCase(); break;
-            case 4: valA = (a.presidio || '').toLowerCase(); valB = (b.presidio || '').toLowerCase(); break;
-            case 5: valA = (a.note || '').toLowerCase(); valB = (b.note || '').toLowerCase(); break;
+            case 3: valA = a.email.toLowerCase(); valB = b.email.toLowerCase(); break;
+            case 4: valA = a.presidio.toLowerCase(); valB = b.presidio.toLowerCase(); break;
+            case 5: valA = a.note.toLowerCase(); valB = b.note.toLowerCase(); break;
             default: valA = ''; valB = '';
           }
           if(valA < valB) return sortAsc ? -1 : 1;
@@ -251,26 +255,52 @@
       const totalPages = Math.ceil(filtered.length / pageSize);
       if(currentPage > totalPages) currentPage = totalPages || 1;
 
-      const pageRows = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+      const pageRows = filtered.slice((currentPage -1)*pageSize, currentPage*pageSize);
 
       tbody.innerHTML = '';
-
       for (const row of pageRows) {
-        const presidioKey = row.presidio ? row.presidio.toUpperCase() : '';
-        const tooltipEmail = tooltipEmails[presidioKey] || '';
+        const presidioUpper = row.presidio.toUpperCase();
+        const tooltipEmail = tooltipEmails[presidioUpper] || '';
 
-        const tr = document.createElement('tr');
+        const emailRaw = row.email.trim();
+        let emailCell = '';
+
+        if(emailRaw.includes('@')) {
+          // email valida, la mostro semplice senza tooltip
+          emailCell = `${emailRaw}`;
+        } else if(emailRaw === '' && tooltipEmail) {
+          // campo email vuoto ma presidio noto
+          emailCell = `
+            <div class="tooltip">${row.presidio}
+              <span class="tooltiptext">${tooltipEmail}</span>
+            </div>`;
+        } else if(tooltipEmails[emailRaw.toUpperCase()]) {
+          // campo email contiene presidio, mostro con tooltip
+          emailCell = `
+            <div class="tooltip">${emailRaw}
+              <span class="tooltiptext">${tooltipEmails[emailRaw.toUpperCase()]}</span>
+            </div>`;
+        } else {
+          // altrimenti mostro testo semplice
+          emailCell = emailRaw;
+        }
+
+        tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${row.citta}</td>
           <td>${row.indirizzo}</td>
-          <td>${row.servizio}</td>
           <td>
-            <div class="tooltip">${row.email && row.email.trim() !== '' ? row.email : row.presidio}
-              ${tooltipEmail ? `<span class="tooltiptext">${tooltipEmail}</span>` : ''}
+            <div class="tooltip">${row.servizio || ''}
+              <span class="tooltiptext">${row.servizio || ''}</span>
             </div>
           </td>
+          <td>${emailCell}</td>
           <td>${row.presidio}</td>
-          <td>${row.note}</td>
+          <td>
+            <div class="tooltip">${row.note || ''}
+              <span class="tooltiptext">${row.note || ''}</span>
+            </div>
+          </td>
         `;
         tbody.appendChild(tr);
       }
@@ -321,17 +351,12 @@
 
       const filtered = filterRows();
       const headers = ["Città", "Indirizzo", "Servizio ASST", "Email", "Presidio Fleet", "Note"];
-      const data = filtered.map(row => {
-        // Usa email tooltip se email vuota
-        const presidioKey = row.presidio ? row.presidio.toUpperCase() : '';
-        const mail = row.email && row.email.trim() !== '' ? row.email : (tooltipEmails[presidioKey] || '');
-        return [row.citta, row.indirizzo, row.servizio, mail, row.presidio, row.note];
-      });
+      const data = filtered.map(row => [row.citta, row.indirizzo, row.servizio, row.email, row.presidio, row.note]);
 
       doc.setFontSize(12);
       doc.text("Esportazione Sedi Filtrate", 10, 10);
 
-      // autoTable plugin per tabella
+      // Usa autoTable per la tabella (controlla se plugin caricato correttamente)
       doc.autoTable({
         startY: 20,
         head: [headers],
@@ -346,13 +371,16 @@
       document.body.classList.toggle('dark-mode');
     }
 
+    // Event listeners filtri
     document.getElementById('cityFilter').addEventListener('change', () => { currentPage = 1; renderTable(); });
     document.getElementById('serviceFilter').addEventListener('change', () => { currentPage = 1; renderTable(); });
     document.getElementById('presidioFilter').addEventListener('change', () => { currentPage = 1; renderTable(); });
 
+    // Carica CSV al caricamento pagina
     loadCSV();
-  </script>
 
+  </script>
+  <!-- Tabella in PDF richiede autoTable -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </body>
 </html>
